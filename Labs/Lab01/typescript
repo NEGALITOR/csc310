@@ -1,0 +1,209 @@
+Script started on Mon 16 Jan 2023 04:05:06 PM EST
+]0;tas_ta@cobra:~/csc310/Labs/Lab01[?1034hcobra<Lab01> => cat tail.cpp 
+#include <fstream>
+#include <iostream>
+
+using namespace std;
+
+string tail(string fileName, int linesToPrint);
+
+int main(int argc, char *argv[])
+{
+    int linesToPrint = abs(stoi(argv[1]));
+    string fileName = argv[2];   
+    
+    cout << tail(fileName, linesToPrint) << endl;
+}
+
+string tail(string fileName, int linesToPrint)
+{
+    fstream inOut(fileName.c_str(), ios::in | ios::out);
+    string output = "";
+    int lineNumber = 0;
+    int count = -1;
+    char ch;
+
+    inOut.seekg(-1, ios::end);
+
+    inOut.get(ch);
+    if (ch == '\n') count = -2;
+
+    //inOut.seekg(0);
+    while (lineNumber < linesToPrint)
+    {
+        long currentPos = inOut.tellg();
+
+        if (currentPos == -1)
+        {
+            break;
+        }
+
+        inOut.seekg(count, ios::end);
+        inOut.get(ch);
+        //cout << ch;
+        //cout << "< " << ch << " > " << inOut.tellg() << endl;
+        
+
+        if (ch == '\n')
+        {
+            lineNumber++;
+        }
+        
+        output = ch + output;
+        count--;
+    }
+    output = output.substr(1, output.length()-1);
+    inOut.close();
+    return output;
+}]0;tas_ta@cobra:~/csc310/Labs/Lab01cobra<Lab01> => cat wc.cpp 
+#include <fstream>
+#include <iostream>
+
+using namespace std;
+
+void wc(string fileName, bool lineBool, bool wordBool, bool byteBool);
+
+int main(int argc, char *argv[])
+{
+    string fileName = argv[argc-1];
+    bool lineBool = false;
+    bool wordBool = false;
+    bool byteBool = false;
+
+    if (argc > 2)
+    {
+        for (int i = 1; i < argc-1; i++)
+        {
+            //line count
+            if ((string) argv[i] == "-l") lineBool = true;
+
+            //word count
+            if ((string) argv[i] == "-w") wordBool = true;
+
+            //byte count
+            if ((string) argv[i] == "-c") byteBool = true;
+
+        }
+    }
+    if (lineBool==false && wordBool==false && byteBool==false) lineBool = true, wordBool = true, byteBool = true;
+    
+    wc(fileName, lineBool, wordBool, byteBool);
+}
+
+void wc(string fileName, bool lineBool, bool wordBool, bool byteBool)
+{
+    fstream inOut(fileName.c_str(), ios::in | ios::out);
+    int lineCount = 0;
+    int wordCount = 1;
+    int byteCount = 0;
+    char ch;
+
+    if (!inOut) { cout << "File does not exist!" << endl; return;}
+
+    inOut.seekg(0, ios::end);
+    int fileLength = inOut.tellg();
+    if (fileLength == 0) 
+    {
+        int lineCount = 0;
+        int wordCount = 0;
+        int byteCount = 0;
+        cout << lineCount << " " << wordCount << " " << byteCount << " " << fileName << endl;
+        return;
+    }
+    
+    inOut.seekg(0);
+    while (inOut.get(ch)) //!inOut.eof()
+    {        
+        if (ch == ' ')
+        {
+            wordCount++;
+        }
+        if (ch == '\n')
+        {
+            lineCount++;
+            wordCount++;
+        }
+
+        byteCount++;
+    }
+
+    if (inOut.eof())
+    {
+        inOut.seekg(-1, ios::end);
+        inOut.get(ch);
+        if (ch == '\n') wordCount--;
+    }
+
+    inOut.close();
+
+    string lineCountOutput = to_string(lineCount) + " ";
+    string wordCountOutput = to_string(wordCount) + " ";
+    string byteCountOutput = to_string(byteCount) + " ";
+
+    if (lineBool == false) lineCountOutput = "";
+    if (wordBool == false) wordCountOutput = "";
+    if (byteBool == false) byteCountOutput = "";
+
+    cout << lineCountOutput << wordCountOutput <<  byteCountOutput << fileName << endl;
+}]0;tas_ta@cobra:~/csc310/Labs/Lab01cobra<Lab01> => cat iam.cpp 
+#include <iostream>
+
+using namespace std;
+
+class Base
+{
+    public:
+        virtual void iam();
+};
+
+void Base::iam()
+{
+    cout << "base" << endl;
+}
+
+class One : public Base
+{
+    public:
+        virtual void iam()
+        {
+            cout << "one" << endl;
+        }
+        void iam2()
+        {
+            Base :: iam();
+        }
+};
+
+class Two : public Base
+{
+    public:
+        virtual void iam()
+        {
+            cout << "two" << endl;
+        }
+        void iam2()
+        {
+            Base :: iam();
+        }
+};
+
+int main()
+{
+    One derivedOne;
+    Two derivedTwo;
+
+    cout << "derivedOne iam(): "; derivedOne.iam();
+    cout << "derivedOne iam2(): "; derivedOne.iam2(); cout << endl;
+    cout << "derivedTwo iam(): "; derivedTwo.iam();
+    cout << "derivedTwo iam2(): "; derivedTwo.iam2(); cout << endl;
+
+    Base* derivedOnePtr = &derivedOne;
+    Base* derivedTwoPtr = &derivedTwo;
+
+    cout << "derivedOne Pointer iam(): "; derivedOnePtr->iam();
+    cout << "derivedTwo Pointer iam2(): "; derivedTwoPtr->iam();
+
+}]0;tas_ta@cobra:~/csc310/Labs/Lab01cobra<Lab01> => exit
+exit
+
+Script done on Mon 16 Jan 2023 04:05:51 PM EST

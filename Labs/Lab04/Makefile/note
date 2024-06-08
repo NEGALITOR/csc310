@@ -1,0 +1,2 @@
+
+You should not normally need or want to "clean object files". The whole point of using Make, is that you don't clean up but stay dirty!
